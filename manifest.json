@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+  "name": "BigBlueButton+",
+  "version": "0.0.0",
+  "description": "Adds some nice features to BBB :)",
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.lehrerfortbildung-bw.de/*"
+      ],
+      "js": [
+        "core.js"
+      ]
+    }
+  ],
+  "applications": {
+    "gecko": {
+      "id": "bbb-plus@gmx-topmail.de"
+    }
+  }
+}
