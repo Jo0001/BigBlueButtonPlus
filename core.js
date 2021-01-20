@@ -4,7 +4,7 @@ const defaultId = 8;
 
 setTimeout(function () {
     load();
-}, 3000);
+}, 6000);
 
 function load() {
     console.info("Loading BigBlueButton+");
@@ -14,7 +14,7 @@ function load() {
     btn.style = "background: white; cursor: pointer;border: 2px solid white;border-radius: 50px;";
     btn.onclick = toggle;
     btn.title = "Hand heben";
-    document.getElementById("tippy-19").parentElement.append(btn);
+    document.getElementsByClassName("buttonWrapper--x8uow button--295UAi")[0].parentElement.append(btn);
 }
 
 function toggle() {

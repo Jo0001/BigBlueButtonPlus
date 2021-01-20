@@ -1,8 +1,11 @@
 {
   "manifest_version": 2,
   "name": "BigBlueButton+",
-  "version": "0.0.0",
-  "description": "Adds some nice features to BBB :)",
+  "version": "1.0.0",
+  "description": "Raise/Lower your hand with one click in BigBlueButton :)",
+  "icons": {
+    "128": "128.png"
+  },
   "content_scripts": [
     {
       "matches": [
