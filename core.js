@@ -1,10 +1,10 @@
 let raise = false;
-let btn;
+let btn, baseElement, hand, delay;
 const defaultId = 8;
 
 setTimeout(function () {
     load();
-}, 6000);
+}, 6000);//6sec
 
 function load() {
     console.info("Loading BigBlueButton+");
@@ -14,24 +14,50 @@ function load() {
     btn.style = "background: white; cursor: pointer;border: 2px solid white;border-radius: 50px;";
     btn.onclick = toggle;
     btn.title = "Hand heben";
-    document.getElementsByClassName("buttonWrapper--x8uow button--295UAi")[0].parentElement.append(btn);
+    baseElement = document.getElementsByClassName("buttonWrapper--x8uow button--295UAi")[0];
+    baseElement.parentElement.append(btn);
+    hand = document.getElementById("hand");
+    setTimeout(function () {
+        baseElement.addEventListener('click', unmuteClear);
+    }, 30000);//30sec
+}
+
+function startAutoTimeout() {
+    delay = setTimeout(function () {
+        if (confirm("Du streckst seit 3min \nHand herunternehmen?")) {
+            lowerHand();
+        }
+    }, 180000);//3min
+}
+
+function unmuteClear() {
+    if (baseElement.children[0].children[0].classList.contains("icon-bbb-mute")) {
+        clearTimeout(delay);
+        lowerHand();
+    }
 }
 
 function toggle() {
-    let hand = document.getElementById("hand");
     if (!raise) {
         //raise hand
         document.getElementsByClassName("item--yl1AH")[6].click();
         document.getElementsByClassName("item--yl1AH")[getItem()].click();
         btn.title = "Hand herunternehmen";
         hand.style.fill = "#0F70D7";
+        raise = true;
+        startAutoTimeout();
     } else {
-        //clear
-        document.getElementsByClassName("item--yl1AH")[7].click();
-        btn.title = "Hand heben";
-        hand.style.fill = "black";
+        lowerHand();
+        clearTimeout(delay);
     }
-    raise = !raise;
+}
+
+function lowerHand() {
+    //clear
+    document.getElementsByClassName("item--yl1AH")[7].click();
+    btn.title = "Hand heben";
+    hand.style.fill = "black";
+    raise = false;
 }
 
 function getItem() {
