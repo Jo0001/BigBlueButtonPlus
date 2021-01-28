@@ -1,5 +1,4 @@
 let raise = false;
-let addedUnmuteListener = false;
 let btn, baseElement, hand, delay;
 const defaultId = 8;
 
@@ -7,6 +6,15 @@ setTimeout(function () {
     console.info("[BBB+] Loading BigBlueButton+");
     document.title = "BigBlueButton+ Videokonferenz";
     if (!isMod()) loadHandRaise();
+
+    //VOLUME CONTROL STUFF
+    document.querySelector("audio").volume = 0.9;
+    document.getElementsByClassName("left--18SBXP")[0].addEventListener("click", function () {
+        if (document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0) setTimeout(function () {
+            addVolumeControl()
+        }, 100);
+    });
+    addVolumeControl();
 }, 30000);//30sec
 
 function isMod() {
@@ -66,10 +74,7 @@ function toggle() {
         hand.style.fill = "#0F70D7";
         raise = true;
         startAutoTimeout();
-        if (!addedUnmuteListener) {
-            baseElement.addEventListener('click', unmuteClear);
-            addedUnmuteListener = true;
-        }
+        baseElement.addEventListener('click', unmuteClear);
     } else {
         lowerHand();
         clearTimeout(delay);
@@ -91,4 +96,35 @@ function getItem() {
     } else {
         return defaultId;
     }
+}
+
+
+function addVolumeControl() {
+    let volume = document.querySelector("audio").volume;
+    let outerdiv = document.createElement("div");
+    outerdiv.classList = "messages--Z1feno8";
+    let container = document.createElement("div");
+    container.classList = "container--Z1UAd2a";
+    outerdiv.appendChild(container);
+    let h2 = document.createElement("h2");
+    h2.classList = "smallTitle--2wz4kP";
+    h2.innerText = "Lautstärke " + volume * 100 + "%";
+    container.appendChild(h2);
+    let slider = document.createElement("input");
+    slider.style = "margin-left: 6px; width:95%";
+    slider.type = "range";
+    slider.id = "volumeslider";
+    slider.min = 0;
+    slider.max = 1
+    slider.step = 0.1;
+    slider.oninput = changeVolume;
+    slider.value = volume;
+    outerdiv.append(slider);
+    document.getElementsByClassName("messages--Z1feno8")[1].append(outerdiv);
+}
+
+function changeVolume() {
+    let r = document.getElementById("volumeslider").value;
+    document.querySelector("audio").volume = r;
+    document.getElementsByClassName("smallTitle--2wz4kP")[2].innerText = "Lautstärke " + r * 100 + "%";
 }
