@@ -2,20 +2,34 @@ let raise = false;
 let btn, baseElement, hand, delay;
 const defaultId = 8;
 
-setTimeout(function () {
-    console.info("[BBB+] Loading BigBlueButton+");
-    document.title = "BigBlueButton+ Videokonferenz";
-    if (!isMod()) loadHandRaise();
+function init() {
+    let counter = 0;
+    let initTimer = setInterval(function () {
+        baseElement = document.getElementsByClassName("buttonWrapper--x8uow button--295UAi")[0];
+        if (typeof baseElement !== 'undefined') {
+            clearInterval(initTimer);
+            console.info("[BBB+] Loading BigBlueButton+");
+            document.title = "BigBlueButton+ Videokonferenz";
+            if (!isMod()) loadHandRaise();
 
-    //VOLUME CONTROL STUFF
-    document.querySelector("audio").volume = 0.9;
-    document.getElementsByClassName("left--18SBXP")[0].addEventListener("click", function () {
-        if (document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0) setTimeout(function () {
-            addVolumeControl()
-        }, 100);
-    });
-    addVolumeControl();
-}, 30000);//30sec
+            //VOLUME CONTROL STUFF
+            document.querySelector("audio").volume = 0.9;
+            document.getElementsByClassName("left--18SBXP")[0].addEventListener("click", function () {
+                if (document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0) setTimeout(function () {
+                    addVolumeControl()
+                }, 100);
+            });
+            addVolumeControl();
+        } else if (counter === 45) {
+            clearInterval(initTimer);
+            console.error("[BBB+] Couldn't load BigBlueButton+");
+        } else {
+            counter++;
+        }
+    }, 4000);//every 4sec
+}
+
+init();
 
 function isMod() {
     let mod = false;
@@ -42,7 +56,6 @@ function loadHandRaise() {
         btn.style = "background: white; cursor: pointer;border: 2px solid white;border-radius: 50px;";
         btn.onclick = toggle;
         btn.title = "Hand heben";
-        baseElement = document.getElementsByClassName("buttonWrapper--x8uow button--295UAi")[0];
         baseElement.parentElement.append(btn);
         hand = document.getElementById("hand");
     } catch (e) {
@@ -51,16 +64,20 @@ function loadHandRaise() {
 }
 
 function startAutoTimeout() {
-    delay = setTimeout(function () {
-        if (confirm("Du streckst seit 2,5min \nHand herunternehmen?")) {
+    let min = 2.5;
+    delay = setInterval(function () {
+        if (confirm("Du streckst seit " + min + "min \nHand herunternehmen?")) {
+            clearInterval(delay)
             lowerHand();
+        } else {
+            min += 2.5;
         }
     }, 150000);//2,5min
 }
 
 function unmuteClear() {
     if (baseElement.children[0].children[0].classList.contains("icon-bbb-mute")) {
-        clearTimeout(delay);
+        clearInterval(delay);
         lowerHand();
     }
 }
