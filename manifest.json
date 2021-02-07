@@ -1,15 +1,15 @@
 {
   "manifest_version": 2,
   "name": "BigBlueButton+",
-  "version": "1.1.1",
-  "description": "Strecke mit einem Klick, passe die Lautstärke an & mehr",
+  "version": "1.1.2",
+  "description": "Strecke mit einem Klick, passe die Lautstärke an & mehr -die perfekte Ergänzung für BBB Meetings",
   "icons": {
     "128": "128.png"
   },
   "content_scripts": [
     {
       "matches": [
-        "*://*.lehrerfortbildung-bw.de/*"
+        "https://*/html5client/join*"
       ],
       "js": [
         "core.js"
