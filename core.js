@@ -13,7 +13,7 @@ function init() {
             if (!isMod()) loadHandRaise();
 
             //VOLUME CONTROL STUFF
-            document.querySelector("audio").volume = 0.9;
+            document.querySelector("audio").volume = getVolume();
             document.getElementsByClassName("left--18SBXP")[0].addEventListener("click", function () {
                 if (document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0) setTimeout(function () {
                     addVolumeControl()
@@ -117,7 +117,7 @@ function getItem() {
 
 
 function addVolumeControl() {
-    let volume = document.querySelector("audio").volume;
+    //let volume = document.querySelector("audio").volume;
     let outerdiv = document.createElement("div");
     outerdiv.classList = "messages--Z1feno8";
     let container = document.createElement("div");
@@ -125,7 +125,7 @@ function addVolumeControl() {
     outerdiv.appendChild(container);
     let h2 = document.createElement("h2");
     h2.classList = "smallTitle--2wz4kP";
-    h2.innerText = "Lautstärke " + volume * 100 + "%";
+    h2.innerText = "Lautstärke " + getVolume() * 100 + "%";
     container.appendChild(h2);
     let slider = document.createElement("input");
     slider.style = "margin-left: 6px; width:95%";
@@ -135,7 +135,7 @@ function addVolumeControl() {
     slider.max = 1
     slider.step = 0.1;
     slider.oninput = changeVolume;
-    slider.value = volume;
+    slider.value = getVolume();
     outerdiv.append(slider);
     document.getElementsByClassName("messages--Z1feno8")[1].append(outerdiv);
 }
@@ -143,5 +143,16 @@ function addVolumeControl() {
 function changeVolume() {
     let r = document.getElementById("volumeslider").value;
     document.querySelector("audio").volume = r;
+    localStorage.setItem("bbb_plus_volume", r);
     document.getElementsByClassName("smallTitle--2wz4kP")[2].innerText = "Lautstärke " + r * 100 + "%";
+}
+
+function getVolume() {
+    let fromLocal = localStorage.getItem("bbb_plus_volume");
+    if (fromLocal !== null && !isNaN(parseFloat(fromLocal))) {
+        return parseFloat(fromLocal);
+    } else {
+        localStorage.setItem("bbb_plus_volume", "0.9");
+        return 0.9;
+    }
 }
