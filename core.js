@@ -10,7 +10,11 @@ function init() {
             clearInterval(initTimer);
             console.info("[BBB+] Loading BigBlueButton+");
             document.title = "BigBlueButton+ Videokonferenz";
-            if (!isMod()) loadHandRaise();
+            if (isMod()) {
+                loadHandRaise(true);
+            } else {
+                loadHandRaise(false);
+            }
 
             //VOLUME CONTROL STUFF
             document.querySelector("audio").volume = getVolume();
@@ -20,6 +24,13 @@ function init() {
                 }, 100);
             });
             addVolumeControl();
+
+            mutationObserver.observe(document.getElementsByClassName("userAvatar--1GxXQi")[0], {
+                attributes: true,
+                childList: true,
+                subtree: true
+            });
+
         } else if (counter === 45) {
             clearInterval(initTimer);
             console.error("[BBB+] Couldn't load BigBlueButton+");
@@ -32,24 +43,10 @@ function init() {
 init();
 
 function isMod() {
-    let mod = false;
-    try {
-        try {
-            if (document.querySelectorAll('[aria-label~="You"]')[0].parentElement.children[0].children[0].classList.contains("moderator--24bqCT")) {
-                mod = true;
-            }
-        } catch (e) {
-            if (document.querySelectorAll('[aria-label~="Sie"]')[0].parentElement.children[0].children[0].classList.contains("moderator--24bqCT")) {
-                mod = true;
-            }
-        }
-    } catch (e) {
-        console.warn("[BBB+] Error on detecting moderator privileges" + e);
-    }
-    return mod
+    return (document.getElementsByClassName("userAvatar--1GxXQi")[0].children[0].classList.contains("moderator--24bqCT") || document.getElementsByClassName("userAvatar--1GxXQi")[0].children[0].classList.contains("presenter--Z1INqI5"));
 }
 
-function loadHandRaise() {
+function loadHandRaise(invisible) {
     try {
         btn = document.createElement("button");
         btn.innerHTML = '<svg height="24" width="24" id="hand" viewBox="0 0 32 32" style="margin-left: -3px"><path d="M30.688 7.313v19.375c0 2.938-2.438 5.313-5.375 5.313h-9.688a5.391 5.391 0 01-3.813-1.563L1.312 19.75S3 18.125 3.062 18.125a1.7 1.7 0 011.063-.375c.313 0 .563.063.813.188.063 0 5.75 3.25 5.75 3.25V5.313c0-1.125.875-2 2-2s2 .875 2 2v9.375h1.313V2c0-1.125.875-2 2-2s2 .875 2 2v12.688h1.313V3.313c0-1.125.875-2 2-2s2 .875 2 2v11.375h1.375V7.313c0-1.125.875-2 2-2s2 .875 2 2z"></path></svg>';
@@ -58,6 +55,7 @@ function loadHandRaise() {
         btn.title = "Hand heben";
         baseElement.parentElement.append(btn);
         hand = document.getElementById("hand");
+        if (invisible) btn.style.display = "none";
     } catch (e) {
         console.error("[BBB+] Error on loadHandRaise() " + e);
     }
@@ -105,6 +103,35 @@ function lowerHand() {
     hand.style.fill = "black";
     raise = false;
 }
+
+function fakeLowerHand() {
+    clearTimeout(delay);
+    btn.title = "Hand heben";
+    hand.style.fill = "black";
+    raise = false;
+}
+
+const mutationObserver = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+        if (mutation.type === "attributes") {
+            //mod/presenter change test
+            if (mutation.target.classList.contains("avatar--Z2lyL8K") && !(mutation.target.classList.contains("moderator--24bqCT") || mutation.target.classList.contains("presenter--Z1INqI5"))) {
+                btn.style.display = "block";
+            } else {
+                fakeLowerHand();
+                btn.style.display = "none"
+            }
+        } else if (mutation.type === "childList") {
+            if (mutation.removedNodes.length > 0) {
+                try {
+                    //check if the hand was cleared from a foreign source
+                    if (mutation.removedNodes.item(0).classList[0].startsWith("icon")) fakeLowerHand();
+                } catch (ignored) {
+                }
+            }
+        }
+    });
+});
 
 function getItem() {
     let fromLocal = localStorage.getItem("bbb_plus_id");

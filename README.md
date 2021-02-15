@@ -8,7 +8,7 @@ Strecke mit einem Klick, passe die Lautstärke an & mehr -die perfekte Ergänzun
 - Farbliche Hervorhebung bei Erwähnungen
 
 ## Bekannte Bugs/Probleme
-- Der Wechsel von Moderator zu Normal (und anders herum) während eines Meetings kann zu Problemen bei der Hand-heben Funktion führen
+- ~~Der Wechsel von Moderator zu Normal (und anders herum) während eines Meetings kann zu Problemen bei der Hand-heben Funktion führen~~ behoben in Version`1.1.4`
 
 ### Credits
 Hand icon from [@Jitsi](https://github.com/jitsi/jitsi-meet)
