@@ -176,7 +176,7 @@ const raiseObserver = new MutationObserver(function (mutations) {
                         user.unshift(name);
                         if (user.length > 3) user.pop();
                     }
-                    messageBar.innerHTML = user + " strecken derzeit";
+                    messageBar.innerText = user + " strecken derzeit";
                     messageBar.style.display = "block";
                     clearTimeout(cleanDelay);
                     cleanDelay = setTimeout(function () {
