@@ -1,5 +1,6 @@
 let raise = false;
-let btn, baseElement, hand, delay;
+let btn, baseElement, hand, delay, cleanDelay, messageBar;
+let user = [];
 const defaultId = 8;
 
 function init() {
@@ -12,18 +13,30 @@ function init() {
             document.title = "BigBlueButton+ Videokonferenz";
             if (isMod()) {
                 loadHandRaise(true);
+                startObserver();
             } else {
                 loadHandRaise(false);
             }
+
+            loadMessageBar();
 
             //VOLUME CONTROL STUFF
             document.querySelector("audio").volume = getVolume();
             document.getElementsByClassName("left--18SBXP")[0].addEventListener("click", function () {
                 if (document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0) setTimeout(function () {
-                    addVolumeControl()
+                    addVolumeControl();
+                    addMessageBar()
                 }, 100);
             });
             addVolumeControl();
+
+            function addMessageBar() {
+                document.getElementsByClassName("chatListItemLink--Z26YVGA")[0].addEventListener("click", function () {
+                    if (typeof document.getElementsByClassName("chat--111wNM")[0] === "undefined") setTimeout(function () {
+                        document.getElementsByClassName("chat--111wNM")[0].children[1].append(messageBar);
+                    }, 100);
+                });
+            }
 
             mutationObserver.observe(document.getElementsByClassName("userAvatar--1GxXQi")[0], {
                 attributes: true,
@@ -33,7 +46,7 @@ function init() {
 
         } else if (counter === 45) {
             clearInterval(initTimer);
-            console.error("[BBB+] Couldn't load BigBlueButton+");
+            console.error("[BBB+] Couldn'messageBar load BigBlueButton+");
         } else {
             counter++;
         }
@@ -59,6 +72,20 @@ function loadHandRaise(invisible) {
     } catch (e) {
         console.error("[BBB+] Error on loadHandRaise() " + e);
     }
+}
+
+function loadMessageBar() {
+    messageBar = document.createElement("div");
+    messageBar.className = "systemMessage--ZYspJQ";
+    messageBar.style.display = "none";
+    document.getElementsByClassName("chat--111wNM")[0].children[1].append(messageBar);
+}
+
+function startObserver() {
+    raiseObserver.observe(document.getElementsByClassName("list--Z2pj65C")[2], {
+        attributes: true,
+        subtree: true
+    });
 }
 
 function startAutoTimeout() {
@@ -117,17 +144,47 @@ const mutationObserver = new MutationObserver(function (mutations) {
             //mod/presenter change test
             if (mutation.target.classList.contains("avatar--Z2lyL8K") && !(mutation.target.classList.contains("moderator--24bqCT") || mutation.target.classList.contains("presenter--Z1INqI5"))) {
                 btn.style.display = "block";
+                messageBar.style.display = "none";
+                raiseObserver.disconnect()
             } else {
                 fakeLowerHand();
-                btn.style.display = "none"
+                btn.style.display = "none";
+                startObserver();
             }
         } else if (mutation.type === "childList") {
             if (mutation.removedNodes.length > 0) {
                 try {
                     //check if the hand was cleared from a foreign source
-                    if (mutation.removedNodes.item(0).classList[0].startsWith("icon")) fakeLowerHand();
+                    if (mutation.removedNodes.item(0).classList[0].startsWith("icon")) {
+                        fakeLowerHand();
+                    }
                 } catch (ignored) {
                 }
+            }
+        }
+    });
+});
+
+const raiseObserver = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+        if (mutation.type === "attributes") {
+            try {
+                if (mutation.target.getAttribute("aria-label").includes("raiseHand")) {
+                    let name = mutation.target.getAttribute("aria-label").split("   ")[0];
+                    console.info(name + " has raised his hand");
+                    if (user.indexOf(name) === -1) {
+                        user.unshift(name);
+                        if (user.length > 3) user.pop();
+                    }
+                    messageBar.innerHTML = user + " strecken derzeit";
+                    messageBar.style.display = "block";
+                    clearTimeout(cleanDelay);
+                    cleanDelay = setTimeout(function () {
+                        messageBar.style.display = "none";
+                        user = [];
+                    }, 30000);
+                }
+            } catch (ignored) {
             }
         }
     });
