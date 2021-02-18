@@ -38,6 +38,8 @@ function init() {
                 });
             }
 
+            addMessageBar();
+
             mutationObserver.observe(document.getElementsByClassName("userAvatar--1GxXQi")[0], {
                 attributes: true,
                 childList: true,
@@ -176,7 +178,7 @@ const raiseObserver = new MutationObserver(function (mutations) {
                         user.unshift(name);
                         if (user.length > 3) user.pop();
                     }
-                    messageBar.innerText = user + " strecken derzeit";
+                    messageBar.innerText = user + ((user.length === 1) ? "streckt" : "strecken") + " derzeit";
                     messageBar.style.display = "block";
                     clearTimeout(cleanDelay);
                     cleanDelay = setTimeout(function () {
