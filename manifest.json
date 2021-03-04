@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "BigBlueButton+",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Strecke mit einem Klick, passe die Lautstärke an & mehr -die perfekte Ergänzung für BBB Meetings",
   "icons": {
     "128": "128.png"
