@@ -23,10 +23,12 @@ Klare und präzise Beschreibung wie es normalerweise funktionieren sollte
 Füge wenn möglich/passend Screenshots hinzu um das Problem zu beschreiben
 
 **Software Informationen**
- - Plattform [z.B. Windows]
+ - Plattform (z.B. Windows)
  - Firefox Version
- - BigBlueButton Version
+ - BigBlueButton Client Version
  - Add-On Version
+ - User-Typ (Moderator,Presentator,normaler User)
+
 
 **Weitere Informationen**
 Zusätzliche Informationen...
