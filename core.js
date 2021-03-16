@@ -48,7 +48,7 @@ function init() {
 
         } else if (counter === 45) {
             clearInterval(initTimer);
-            console.error("[BBB+] Couldn'messageBar load BigBlueButton+");
+            console.error("[BBB+] Couldn't load messageBar");
         } else {
             counter++;
         }
