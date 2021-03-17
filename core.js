@@ -144,14 +144,14 @@ const mutationObserver = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
         if (mutation.type === "attributes") {
             //mod/presenter change test
-            if (mutation.target.classList.contains("avatar--Z2lyL8K") && !(mutation.target.classList.contains("moderator--24bqCT") || mutation.target.classList.contains("presenter--Z1INqI5"))) {
-                btn.style.display = "block";
-                messageBar.style.display = "none";
-                raiseObserver.disconnect()
-            } else {
+            if (mutation.target.classList.contains("avatar--Z2lyL8K") && (mutation.target.classList.contains("moderator--24bqCT") || mutation.target.classList.contains("presenter--Z1INqI5"))) {
                 fakeLowerHand();
                 btn.style.display = "none";
                 startObserver();
+            } else {
+                btn.style.display = "block";
+                messageBar.style.display = "none";
+                raiseObserver.disconnect()
             }
         } else if (mutation.type === "childList") {
             if (mutation.removedNodes.length > 0) {
@@ -203,7 +203,6 @@ function getItem() {
 
 
 function addVolumeControl() {
-    //let volume = document.querySelector("audio").volume;
     let outerdiv = document.createElement("div");
     outerdiv.classList = "messages--Z1feno8";
     let container = document.createElement("div");
