@@ -10,7 +10,7 @@ function init() {
         if (typeof baseElement !== 'undefined') {
             clearInterval(initTimer);
             console.info("[BBB+] Loading BigBlueButton+");
-            document.title = "BigBlueButton+ Videokonferenz";
+            document.title = "BigBlueButton+ Meeting";
             if (isMod()) {
                 loadHandRaise(true);
                 startObserver();
@@ -102,13 +102,6 @@ function startAutoTimeout() {
     }, 150000);//2,5min
 }
 
-function unmuteClear() {
-    if (baseElement.children[0].children[0].classList.contains("icon-bbb-mute")) {
-        clearInterval(delay);
-        lowerHand();
-    }
-}
-
 function toggle() {
     if (!raise) {
         //raise hand
@@ -118,7 +111,6 @@ function toggle() {
         hand.style.fill = "#0F70D7";
         raise = true;
         startAutoTimeout();
-        baseElement.addEventListener('click', unmuteClear);
     } else {
         lowerHand();
         clearTimeout(delay);
@@ -144,14 +136,21 @@ const mutationObserver = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
         if (mutation.type === "attributes") {
             //mod/presenter change test
-            if (mutation.target.classList.contains("avatar--Z2lyL8K") && (mutation.target.classList.contains("moderator--24bqCT") || mutation.target.classList.contains("presenter--Z1INqI5"))) {
-                fakeLowerHand();
-                btn.style.display = "none";
-                startObserver();
-            } else {
-                btn.style.display = "block";
-                messageBar.style.display = "none";
-                raiseObserver.disconnect()
+            if (mutation.target.classList.contains("avatar--Z2lyL8K")) {
+                if (mutation.target.classList.contains("moderator--24bqCT") || mutation.target.classList.contains("presenter--Z1INqI5")) {
+                    fakeLowerHand();
+                    btn.style.display = "none";
+                    startObserver();
+                } else {
+                    btn.style.display = "block";
+                    messageBar.style.display = "none";
+                    raiseObserver.disconnect()
+                }
+                //normal user unmute check
+            } else if (mutation.target.classList.contains("talking--2eGaCj") && !isMod()) {
+                if (raise) {
+                    lowerHand();
+                }
             }
         } else if (mutation.type === "childList") {
             if (mutation.removedNodes.length > 0) {
