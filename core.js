@@ -46,9 +46,22 @@ function init() {
                 subtree: true
             });
 
+
+            //check for hand icon on new bbb
+        } else if (typeof document.getElementsByClassName("icon--2q1XXw icon-bbb-hand")[0] !== 'undefined') {
+            console.info("[BBB+] Detected new BBB version, loading volume control");
+            document.querySelector("audio").volume = getVolume();
+            document.getElementsByClassName("left--18SBXP")[0].addEventListener("click", function () {
+                if (document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0) setTimeout(function () {
+                    addVolumeControl();
+                }, 100);
+            });
+            addVolumeControl();
+            clearInterval(initTimer);
         } else if (counter === 45) {
             clearInterval(initTimer);
-            console.error("[BBB+] Couldn't load messageBar");
+            console.error("[BBB+] Couldn't load BigBlueButtonPlus");
+            console.error("[BBB+] Please report this on GitHub https://github.com/Jo0001/BigBlueButtonPlus/issues");
         } else {
             counter++;
         }
@@ -191,6 +204,9 @@ const raiseObserver = new MutationObserver(function (mutations) {
     });
 });
 
+/**
+ * @deprecated since version 1.2.5 and will be removed in a future version
+ */
 function getItem() {
     let fromLocal = localStorage.getItem("bbb_plus_id");
     if (fromLocal !== null && !isNaN(parseInt(fromLocal))) {
