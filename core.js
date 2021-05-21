@@ -58,6 +58,17 @@ function init() {
             });
             addVolumeControl();
             clearInterval(initTimer);
+
+            //Automatic hand lowering on unmute (doesn't work after audio rejoin)
+            let handBtn = document.getElementsByClassName("icon--2q1XXw icon-bbb-hand")[0];
+            let micBtn = document.getElementsByClassName("icon--2q1XXw icon-bbb-mute")[0];
+            micBtn.addEventListener("click", function () {
+                if (micBtn.classList.contains("icon-bbb-mute")) {
+                    if (!handBtn.parentElement.classList.contains("ghost--Z136aiN")) {
+                        handBtn.click();
+                    }
+                }
+            });
         } else if (counter === 45) {
             clearInterval(initTimer);
             console.error("[BBB+] Couldn't load BigBlueButtonPlus");
