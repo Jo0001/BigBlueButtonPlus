@@ -1,3 +1,5 @@
+let lastSpeaker = null;
+
 function init() {
     let counter = 0;
     let initTimer = setInterval(function () {
@@ -112,6 +114,7 @@ const mutationObserver = new MutationObserver(function (mutations) {
                 if (speaker.classList.contains("talker--2eNUIW")) {
 
                     let speakerName = speaker.children.item(1).innerText;
+                    lastSpeaker = speakerName;
                     console.log(speakerName);
                     console.info(document.getElementsByClassName("userNameMain--2fo2zM")[0].children[0].innerText.trim())
                     if (speakerName !== document.getElementsByClassName("userNameMain--2fo2zM")[0].children[0].innerText.trim()) {
@@ -135,8 +138,10 @@ function getUserVolume(user) {
     }
 }
 
-//todo change real audio value also if user == speaking user
 function changeUserVolume(user, value) {
+    if (lastSpeaker === user) {
+        document.querySelector("audio").volume = getVolume() * value;
+    }
     user = user.replaceAll(" ", "-").trim();
     localStorage.setItem("bbb_plus_volume_" + user, value);
     console.warn(localStorage.getItem("bbb_plus_volume_" + user));
