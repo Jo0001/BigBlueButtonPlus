@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "BigBlueButton+",
   "version": "1.3.0",
-  "description": "Strecke mit einem Klick, passe die Lautstärke an & mehr -die perfekte Ergänzung für BBB Meetings",
+  "description": "Individuelle Lautstärke für einzelne Teilnehmer & mehr -die perfekte Ergänzung für BBB Meetings",
   "icons": {
     "128": "128.png"
   },
