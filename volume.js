@@ -1,4 +1,5 @@
 let lastSpeaker = null;
+let isNewVersion = false; //new means 2424
 
 function init() {
     let counter = 0;
@@ -62,6 +63,11 @@ function addVolumeControl() {
     //Per User Slider
     let users = document.getElementsByClassName("tether-element tether-abutted tether-abutted-top tether-out-of-bounds tether-out-of-bounds-right tether-element-attached-bottom tether-element-attached-left tether-target-attached-top tether-target-attached-right tether-enabled");
     console.info(users)
+    if (users.length === 0) {
+        users = document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children;
+        console.info(users)
+        isNewVersion = true;
+    }
     for (let i = 1; i < users.length; i++) {
         //from https://dzone.com/articles/why-does-javascript-loop-only-use-last-value
         try {
@@ -80,7 +86,12 @@ function addVolumeControl() {
             });
             slider.value = getUserVolume(document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children[ii].children[0].children[0].children[0].children[0].children[1].children[0].children[0].innerText);
 
-            users[ii].children[0].children[0].children[0].children[0].append(slider)
+            if (isNewVersion) {
+                let tC = ii + 4;
+                document.getElementsByClassName("MuiPopover-root menu--Z1jX85y")[tC].children[1].children[0].append(slider)
+            } else {
+                users[ii].children[0].children[0].children[0].children[0].append(slider)
+            }
         }
     }
 
