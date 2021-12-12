@@ -1,5 +1,5 @@
 let lastSpeaker = null;
-let isNewVersion = false; //new means 2424
+let isNewVersion = false; //new means ~2394+
 
 function init() {
     let counter = 0;
@@ -60,12 +60,14 @@ function addVolumeControl() {
     outerdiv.append(slider);
     document.getElementsByClassName("messages--Z1feno8")[1].append(outerdiv);
 
+    addPerUserVolume();
+}
+
+function addPerUserVolume() {
     //Per User Slider
     let users = document.getElementsByClassName("tether-element tether-abutted tether-abutted-top tether-out-of-bounds tether-out-of-bounds-right tether-element-attached-bottom tether-element-attached-left tether-target-attached-top tether-target-attached-right tether-enabled");
-    console.info(users)
     if (users.length === 0) {
         users = document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children;
-        console.info(users)
         isNewVersion = true;
     }
     for (let i = 1; i < users.length; i++) {
@@ -73,24 +75,41 @@ function addVolumeControl() {
         try {
             throw i
         } catch (ii) {
-            let slider = document.createElement("input");
-            slider.style = "margin-left: 6px; width:95%";
-            slider.type = "range";
-            slider.min = 0;
-            slider.max = 1
-            slider.step = 0.1;
-            slider.addEventListener('input', function () {
-                let name = document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children[ii].children[0].children[0].children[0].children[0].children[1].children[0].children[0].innerText;
-                changeUserVolume(name, slider.value);
-                console.info(name)
-            });
-            slider.value = getUserVolume(document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children[ii].children[0].children[0].children[0].children[0].children[1].children[0].children[0].innerText);
+            let tC = ii + 4;
+            if (!hasSlider()) {
+                let slider = document.createElement("input");
+                slider.style = "margin-left: 6px; width:95%";
+                slider.type = "range";
+                slider.min = 0;
+                slider.max = 1
+                slider.step = 0.1;
+                slider.className = "bbb_plus_slider";
+                slider.addEventListener('input', function () {
+                    let name = document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children[ii].children[0].children[0].children[0].children[0].children[1].children[0].children[0].innerText;
+                    changeUserVolume(name, slider.value);
+                    console.info(name)
+                });
+                slider.value = getUserVolume(document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children[ii].children[0].children[0].children[0].children[0].children[1].children[0].children[0].innerText);
 
-            if (isNewVersion) {
-                let tC = ii + 4;
-                document.getElementsByClassName("MuiPopover-root menu--Z1jX85y")[tC].children[1].children[0].append(slider)
-            } else {
-                users[ii].children[0].children[0].children[0].children[0].append(slider)
+                if (isNewVersion) {
+                    document.getElementsByClassName("MuiPopover-root menu--Z1jX85y")[tC].children[1].children[0].append(slider)
+                } else {
+                    users[ii].children[0].children[0].children[0].children[0].append(slider)
+                }
+            }
+
+            function hasSlider() {
+                let arr = [...users[ii].children[0].children[0].children[0].children[0].children]
+                if (isNewVersion) {
+                    let tC = ii + 4;
+                    arr = [...document.getElementsByClassName("MuiPopover-root menu--Z1jX85y")[tC].children[1].children[0].children];
+                }
+                for (let j = 0; j < arr.length; j++) {
+                    if (arr[j].className === "bbb_plus_slider") {
+                        return true;
+                    }
+                }
+                return false;
             }
         }
     }
@@ -98,25 +117,7 @@ function addVolumeControl() {
     const userMutationObserver = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
             if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-                let newNode = mutation.addedNodes[0].children[0].children[0].children[0].children[0];
-                let slider = document.createElement("input");
-                slider.style = "margin-left: 6px; width:95%";
-                slider.type = "range";
-                slider.min = 0;
-                slider.max = 1
-                slider.step = 0.1;
-                slider.addEventListener('input', function () {
-                    let name = newNode.children[1].children[0].children[0].innerText;
-                    changeUserVolume(name, slider.value);
-                    console.info(name)
-                });
-                slider.value = getUserVolume(newNode.children[1].children[0].children[0].innerText);
-
-                let users = Array.prototype.slice.call(document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children);
-                let u_id = document.getElementById(newNode.parentNode.parentNode.parentNode.parentNode.id);//get current user id
-                let u_idx = users.indexOf(u_id);//get the index of the user in the user list
-                let menuList = document.getElementsByClassName("tether-element tether-abutted tether-abutted-top tether-out-of-bounds tether-out-of-bounds-right tether-element-attached-bottom tether-element-attached-left tether-target-attached-top tether-target-attached-right tether-enabled");
-                menuList[u_idx].children[0].children[0].children[0].children[0].append(slider)//add the slider to the new user
+                addPerUserVolume();
             }
         });
     });
