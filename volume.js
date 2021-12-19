@@ -1,5 +1,6 @@
 let lastSpeaker = null;
 let isNewVersion = false; //new means ~2394+
+let initialLoad = true;
 
 function init() {
     let counter = 0;
@@ -23,7 +24,12 @@ function init() {
                 attributeOldValue: true,
                 characterDataOldValue: true
             });
-
+            initialLoad = false;
+            window.ononline = function () {
+                if (!initialLoad) {
+                    window.location.reload();//reload the page to reinitialize BBB+
+                }
+            }
             clearInterval(initTimer);
         } else if (counter === 45) {
             clearInterval(initTimer);
