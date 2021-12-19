@@ -52,7 +52,7 @@ function addVolumeControl() {
     outerdiv.appendChild(container);
     let h2 = document.createElement("h2");
     h2.classList = "smallTitle--2wz4kP";
-    h2.innerText = "Lautstärke " + getVolume() * 100 + "%";
+    h2.innerText = "Lautstärke " + parseInt(getVolume() * 100) + "%";
     container.appendChild(h2);
     let slider = document.createElement("input");
     slider.style = "margin-left: 6px; width:95%";
@@ -60,7 +60,7 @@ function addVolumeControl() {
     slider.id = "volumeslider";
     slider.min = 0;
     slider.max = 1
-    slider.step = 0.1;
+    slider.step = 0.05;
     slider.oninput = changeVolume;
     slider.value = getVolume();
     outerdiv.append(slider);
@@ -140,7 +140,7 @@ function changeVolume() {
     let r = document.getElementById("volumeslider").value;
     document.querySelector("audio").volume = r;
     localStorage.setItem("bbb_plus_volume", r);
-    document.getElementsByClassName("smallTitle--2wz4kP")[2].innerText = "Lautstärke " + r * 100 + "%";
+    document.getElementsByClassName("smallTitle--2wz4kP")[2].innerText = "Lautstärke " + parseInt(r * 100) + "%";
 }
 
 function getVolume() {
