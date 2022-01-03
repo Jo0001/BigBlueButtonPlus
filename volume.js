@@ -66,6 +66,18 @@ function addVolumeControl() {
     outerdiv.append(slider);
     document.getElementsByClassName("messages--Z1feno8")[1].append(outerdiv);
 
+    const userMutationObserver = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+            if (mutation.type === "childList" && mutation.target.className === "ReactVirtualized__Grid__innerScrollContainer" && mutation.addedNodes.length > 0 && mutation.removedNodes.length === 0) {
+                addPerUserVolume();
+            }
+        });
+    });
+
+    userMutationObserver.observe(document.getElementsByClassName("ReactVirtualized__Grid ReactVirtualized__List scrollStyle--Ckr4w")[0], {
+        childList: true,
+        subtree: true
+    });
     addPerUserVolume();
 }
 
@@ -119,20 +131,6 @@ function addPerUserVolume() {
             }
         }
     }
-
-    const userMutationObserver = new MutationObserver(function (mutations) {
-        mutations.forEach(function (mutation) {
-            if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-                addPerUserVolume();
-            }
-        });
-    });
-
-    userMutationObserver.observe(document.getElementsByClassName("ReactVirtualized__Grid ReactVirtualized__List scrollStyle--Ckr4w")[0], {
-        attributes: false,
-        childList: true,
-        subtree: true
-    });
 
 }
 
