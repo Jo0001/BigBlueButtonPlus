@@ -9,6 +9,7 @@ function init() {
         if (typeof baseElement !== 'undefined' || typeof document.getElementsByClassName("icon--2q1XXw icon-bbb-hand")[0] !== 'undefined') {
             console.info("[BBB+] Loading volume control");
             document.querySelector("audio").volume = getVolume();
+            clearInterval(initTimer);
             document.getElementsByClassName("left--18SBXP")[0].addEventListener("click", function () {
                 if (document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0) setTimeout(function () {
                     addVolumeControl();
@@ -30,7 +31,6 @@ function init() {
                     window.location.reload();//reload the page to reinitialize BBB+
                 }
             }
-            clearInterval(initTimer);
         } else if (counter === 45) {
             clearInterval(initTimer);
             console.error("[BBB+] Couldn't load BigBlueButtonPlus");
@@ -93,7 +93,7 @@ function addPerUserVolume() {
         try {
             throw i
         } catch (ii) {
-            let tC = ii + 4;
+            let tC = getTcIncrement() + ii;
             if (!hasSlider()) {
                 let slider = document.createElement("input");
                 slider.style = "margin-left: 6px; width:95%";
@@ -119,7 +119,7 @@ function addPerUserVolume() {
             function hasSlider() {
                 let arr = [...users[ii].children[0].children[0].children[0].children[0].children]
                 if (isNewVersion) {
-                    let tC = ii + 4;
+                    let tC = getTcIncrement() + ii;
                     arr = [...document.getElementsByClassName("MuiPopover-root menu--Z1jX85y")[tC].children[1].children[0].children];
                 }
                 for (let j = 0; j < arr.length; j++) {
@@ -192,4 +192,22 @@ function changeUserVolume(user, value) {
     }
     user = user.replaceAll(" ", "-").trim();
     localStorage.setItem("bbb_plus_volume_" + user, value);
+}
+
+function getTcIncrement() {
+    if (isMod()) {
+        return 4;
+    } else if (isPresenter()) {
+        return 3;
+    } else {
+        return 2;
+    }
+}
+
+function isMod() {
+    return document.getElementsByClassName("userAvatar--1GxXQi")[0].children[0].className.includes("moderator");
+}
+
+function isPresenter() {
+    return document.getElementsByClassName("userAvatar--1GxXQi")[0].children[0].className.includes("presenter");
 }
