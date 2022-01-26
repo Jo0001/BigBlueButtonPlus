@@ -52,7 +52,7 @@ function addVolumeControl() {
     outerdiv.appendChild(container);
     let h2 = document.createElement("h2");
     h2.classList = "smallTitle--2wz4kP";
-    h2.innerText = "Lautstärke " + parseInt(getVolume() * 100) + "%";
+    h2.innerText = getVolumeLabelText() + " " + parseInt(getVolume() * 100) + "%";
     container.appendChild(h2);
     let slider = document.createElement("input");
     slider.style = "margin-left: 6px; width:95%";
@@ -138,7 +138,7 @@ function changeVolume() {
     let r = document.getElementById("volumeslider").value;
     document.querySelector("audio").volume = r;
     localStorage.setItem("bbb_plus_volume", r);
-    document.getElementsByClassName("smallTitle--2wz4kP")[2].innerText = "Lautstärke " + parseInt(r * 100) + "%";
+    document.getElementsByClassName("smallTitle--2wz4kP")[2].innerText = getVolumeLabelText() + " " + parseInt(r * 100) + "%";
 }
 
 function getVolume() {
@@ -210,4 +210,8 @@ function isMod() {
 
 function isPresenter() {
     return document.getElementsByClassName("userAvatar--1GxXQi")[0].children[0].className.includes("presenter");
+}
+
+function getVolumeLabelText() {
+    return navigator.language.startsWith("de") ? "Lautstärke" : "Volume";
 }
