@@ -64,7 +64,7 @@ function addVolumeControl() {
     slider.oninput = changeVolume;
     slider.value = getVolume();
     outerdiv.append(slider);
-    document.getElementsByClassName("messages--Z1feno8")[1].append(outerdiv);
+    document.getElementsByClassName("messages--Z1feno8")[document.getElementsByClassName("messages--Z1feno8").length - 1].append(outerdiv);//otherwise not working when shared notes are disabled
 
     const userMutationObserver = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
