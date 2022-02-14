@@ -105,7 +105,6 @@ function addPerUserVolume() {
                 slider.addEventListener('input', function () {
                     let name = document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children[ii].children[0].children[0].children[0].children[0].children[1].children[0].children[0].innerText;
                     changeUserVolume(name, slider.value);
-                    console.info(name)
                 });
                 slider.value = getUserVolume(document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children[ii].children[0].children[0].children[0].children[0].children[1].children[0].children[0].innerText);
 
@@ -164,11 +163,10 @@ const mutationObserver = new MutationObserver(function (mutations) {
 
                     let speakerName = speaker.children.item(1).innerText;
                     lastSpeaker = speakerName;
-                    console.log(speakerName);
-                    console.info(document.getElementsByClassName("userNameMain--2fo2zM")[0].children[0].innerText.trim())
+                    console.log("Current speaker: " + speakerName);
                     if (speakerName !== document.getElementsByClassName("userNameMain--2fo2zM")[0].children[0].innerText.trim()) {
                         document.querySelector("audio").volume = getVolume() * getUserVolume(speakerName);
-                        console.warn("Real value:" + document.querySelector("audio").volume + "\nGlobal:" + getVolume() + "\nPer User (" + speakerName + "):" + getUserVolume(speakerName))
+                        console.log("Real value:" + document.querySelector("audio").volume + "\nGlobal:" + getVolume() + "\nPer User (" + speakerName + "):" + getUserVolume(speakerName))
                     }
                 }
             }
