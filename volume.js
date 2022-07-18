@@ -53,9 +53,12 @@ function addVolumeControl() {
     container.classList = "container--Z1UAd2a";
     outerdiv.appendChild(container);
     let h2 = document.createElement("h2");
-    h2.classList = "smallTitle--2wz4kP sc-fpGCtG sc-hgksCU hJUuLi bNieOo";
+    h2.classList = "smallTitle--2wz4kP sc-cZrumJ sc-rUGft klSLYC iuhfYL";
     h2.innerText = getVolumeLabelText() + " " + parseInt(getVolume() * 100) + "%";
     h2.id = "volumeDisplay";
+    if (isNewVersion) {
+        h2.style = "padding-top: 20px;";
+    }
     container.appendChild(h2);
     let slider = document.createElement("input");
     slider.style = "margin-left: 6px; width:95%";
