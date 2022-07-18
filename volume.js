@@ -1,16 +1,18 @@
 let lastSpeaker = null;
-let isNewVersion = false; //new means ~2394+
+let isOldVersion = false; //old means below ~2827
+let isNewVersion = false; //new means ~2827+
 let initialLoad = true;
 
 function init() {
     let counter = 0;
     let initTimer = setInterval(function () {
-        baseElement = document.getElementsByClassName("buttonWrapper--x8uow button--295UAi")[0];
-        if (typeof baseElement !== 'undefined' || typeof document.getElementsByClassName("icon--2q1XXw icon-bbb-hand")[0] !== 'undefined') {
+        if (typeof document.getElementsByClassName("icon-bbb-hand")[0] !== 'undefined') {
             console.info("[BBB+] Loading volume control");
             document.querySelector("audio").volume = getVolume();
             clearInterval(initTimer);
-            document.getElementsByClassName("left--18SBXP")[0].addEventListener("click", function () {
+            isNewVersion = typeof document.getElementsByClassName("icon--2q1XXw icon-bbb-hand")[0] === 'undefined';
+            let index = isNewVersion ? 1 : 0;
+            document.getElementsByClassName("icon-bbb-user")[index].addEventListener("click", function () {
                 if (document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0) setTimeout(function () {
                     addVolumeControl();
                 }, 100);
@@ -51,8 +53,9 @@ function addVolumeControl() {
     container.classList = "container--Z1UAd2a";
     outerdiv.appendChild(container);
     let h2 = document.createElement("h2");
-    h2.classList = "smallTitle--2wz4kP";
+    h2.classList = "smallTitle--2wz4kP sc-fpGCtG sc-hgksCU hJUuLi bNieOo";
     h2.innerText = getVolumeLabelText() + " " + parseInt(getVolume() * 100) + "%";
+    h2.id = "volumeDisplay";
     container.appendChild(h2);
     let slider = document.createElement("input");
     slider.style = "margin-left: 6px; width:95%";
@@ -64,7 +67,8 @@ function addVolumeControl() {
     slider.oninput = changeVolume;
     slider.value = getVolume();
     outerdiv.append(slider);
-    document.getElementsByClassName("messages--Z1feno8")[document.getElementsByClassName("messages--Z1feno8").length - 1].append(outerdiv);//otherwise not working when shared notes are disabled
+    let element = document.querySelector('[data-test="userListContent"]');
+    element.insertBefore(outerdiv, element.firstChild);
 
     const userMutationObserver = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
@@ -86,7 +90,7 @@ function addPerUserVolume() {
     let users = document.getElementsByClassName("tether-element tether-abutted tether-abutted-top tether-out-of-bounds tether-out-of-bounds-right tether-element-attached-bottom tether-element-attached-left tether-target-attached-top tether-target-attached-right tether-enabled");
     if (users.length === 0) {
         users = document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children;
-        isNewVersion = true;
+        isOldVersion = true;
     }
     for (let i = 1; i < users.length; i++) {
         //from https://dzone.com/articles/why-does-javascript-loop-only-use-last-value
@@ -108,7 +112,7 @@ function addPerUserVolume() {
                 });
                 slider.value = getUserVolume(document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children[ii].children[0].children[0].children[0].children[0].children[1].children[0].children[0].innerText);
 
-                if (isNewVersion) {
+                if (isOldVersion) {
                     document.getElementsByClassName("MuiPopover-root menu--Z1jX85y")[tC].children[1].children[0].append(slider)
                 } else {
                     users[ii].children[0].children[0].children[0].children[0].append(slider)
@@ -117,7 +121,7 @@ function addPerUserVolume() {
 
             function hasSlider() {
                 let arr = [...users[ii].children[0].children[0].children[0].children[0].children]
-                if (isNewVersion) {
+                if (isOldVersion) {
                     let tC = getTcIncrement() + ii;
                     arr = [...document.getElementsByClassName("MuiPopover-root menu--Z1jX85y")[tC].children[1].children[0].children];
                 }
@@ -137,7 +141,7 @@ function changeVolume() {
     let r = document.getElementById("volumeslider").value;
     document.querySelector("audio").volume = r;
     localStorage.setItem("bbb_plus_volume", r);
-    document.getElementsByClassName("smallTitle--2wz4kP")[2].innerText = getVolumeLabelText() + " " + parseInt(r * 100) + "%";
+    document.getElementById("volumeDisplay").innerText = getVolumeLabelText() + " " + parseInt(r * 100) + "%";
 }
 
 function getVolume() {
