@@ -2,7 +2,7 @@ let lastSpeaker = null;
 let isOldVersion = false; //old means below ~2827
 let isNewVersion = false; //new means ~2827+
 let initialLoad = true;
-
+let username;
 function init() {
     let counter = 0;
     let initTimer = setInterval(function () {
@@ -18,8 +18,9 @@ function init() {
                 }, 100);
             });
             addVolumeControl();
+            username = document.querySelector('[data-test="userListItemCurrent"]').firstChild.children[1].firstChild.firstChild.innerText.trim();
 
-            mutationObserver.observe(document.getElementsByClassName("speaking--Z2tUpzD")[0], {
+            mutationObserver.observe(document.querySelector('[data-test="talkingIndicator"]'), {
                 attributes: true,
                 characterData: true,
                 childList: true,
@@ -81,7 +82,7 @@ function addVolumeControl() {
         });
     });
 
-    userMutationObserver.observe(document.getElementsByClassName("ReactVirtualized__Grid ReactVirtualized__List scrollStyle--Ckr4w")[0], {
+    userMutationObserver.observe(document.getElementById("user-list-virtualized-scroll").children[1].firstChild, {
         childList: true,
         subtree: true
     });
@@ -93,7 +94,7 @@ function addPerUserVolume() {
     let users = document.getElementsByClassName("tether-element tether-abutted tether-abutted-top tether-out-of-bounds tether-out-of-bounds-right tether-element-attached-bottom tether-element-attached-left tether-target-attached-top tether-target-attached-right tether-enabled");
     if (users.length === 0) {
         users = document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children;
-        isOldVersion = true;
+        isOldVersion = !isNewVersion;
     }
     for (let i = 1; i < users.length; i++) {
         //from https://dzone.com/articles/why-does-javascript-loop-only-use-last-value
@@ -118,15 +119,17 @@ function addPerUserVolume() {
                 if (isOldVersion) {
                     document.getElementsByClassName("MuiPopover-root menu--Z1jX85y")[tC].children[1].children[0].append(slider)
                 } else {
-                    users[ii].children[0].children[0].children[0].children[0].append(slider)
+                    document.querySelectorAll('[role="menu"]')[5 + ii].append(slider)
                 }
             }
 
             function hasSlider() {
-                let arr = [...users[ii].children[0].children[0].children[0].children[0].children]
+                let arr = [...users[ii].children[0].children[0].children[0].children[0].children];//very old
                 if (isOldVersion) {
                     let tC = getTcIncrement() + ii;
                     arr = [...document.getElementsByClassName("MuiPopover-root menu--Z1jX85y")[tC].children[1].children[0].children];
+                } else if (isNewVersion) {
+                    arr = document.querySelectorAll('[role="menu"]')[5 + ii].children;
                 }
                 for (let j = 0; j < arr.length; j++) {
                     if (arr[j].className === "bbb_plus_slider") {
@@ -161,17 +164,16 @@ const mutationObserver = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
         let nodes = mutation.addedNodes;
         if (nodes.length > 0) {
-            let speakerList = document.getElementsByClassName("speaking--Z2tUpzD")[0].children;
+            let speakerList = document.querySelector('[data-test="talkingIndicator"]').firstChild.children;
             for (let i = 0; i < speakerList.length; i++) {
                 let speaker = speakerList.item(i);
 
                 //make sure user is really talking
-                if (speaker.classList.contains("talker--2eNUIW") && speaker.dataset.test === "isTalking") {
-
+                if (speaker.dataset.test === "isTalking") {
                     let speakerName = speaker.children.item(1).innerText;
                     lastSpeaker = speakerName;
                     console.log("Current speaker: " + speakerName);
-                    if (speakerName !== document.getElementsByClassName("userNameMain--2fo2zM")[0].children[0].innerText.trim()) {
+                    if (speakerName !== username) {
                         document.querySelector("audio").volume = getVolume() * getUserVolume(speakerName);
                         console.log("Real value:" + document.querySelector("audio").volume + "\nGlobal:" + getVolume() + "\nPer User (" + speakerName + "):" + getUserVolume(speakerName))
                     }
@@ -210,11 +212,12 @@ function getTcIncrement() {
 }
 
 function isMod() {
-    return document.getElementsByClassName("userAvatar--1GxXQi")[0].children[0].className.includes("moderator");
+    let userElm = document.querySelector('[data-test="userListItemCurrent"]').firstChild.firstChild.firstChild;
+    return userElm.className.includes("moderator") || userElm.dataset.test === "moderatorAvatar";
 }
 
 function isPresenter() {
-    return document.getElementsByClassName("userAvatar--1GxXQi")[0].children[0].className.includes("presenter");
+    return document.querySelector('[data-test="userListItemCurrent"]').firstChild.firstChild.firstChild.dataset.testPresenter === "";
 }
 
 function getVolumeLabelText() {
