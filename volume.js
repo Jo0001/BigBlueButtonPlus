@@ -3,6 +3,7 @@ let isOldVersion = false; //old means below ~2827
 let isNewVersion = false; //new means ~2827+
 let initialLoad = true;
 let username;
+
 function init() {
     let counter = 0;
     let initTimer = setInterval(function () {
@@ -167,10 +168,10 @@ const mutationObserver = new MutationObserver(function (mutations) {
             let speakerList = document.querySelector('[data-test="talkingIndicator"]').firstChild.children;
             for (let i = 0; i < speakerList.length; i++) {
                 let speaker = speakerList.item(i);
-
                 //make sure user is really talking
-                if (speaker.dataset.test === "isTalking") {
-                    let speakerName = speaker.children.item(1).innerText;
+                let isTalkingElement = isOldVersion ? speaker.dataset.test : speaker.firstChild.dataset.test;
+                if (isTalkingElement === "isTalking") {
+                    let speakerName = isOldVersion ? speaker.children.item(1).innerText : speaker.firstChild.children.item(1).innerText;
                     lastSpeaker = speakerName;
                     console.log("Current speaker: " + speakerName);
                     if (speakerName !== username) {
