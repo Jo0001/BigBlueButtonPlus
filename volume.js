@@ -83,7 +83,7 @@ function addVolumeControl() {
         });
     });
 
-    userMutationObserver.observe(document.getElementById("user-list-virtualized-scroll").children[1].firstChild, {
+    userMutationObserver.observe(document.querySelector('[data-test="userList"]'), {
         childList: true,
         subtree: true
     });
