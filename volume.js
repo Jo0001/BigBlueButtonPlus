@@ -3,6 +3,7 @@ let isOldVersion = false; //old means below ~2827
 let isNewVersion = false; //new means ~2827+
 let initialLoad = true;
 let username;
+let lastSlider = null;
 
 function init() {
     let counter = 0;
@@ -12,13 +13,13 @@ function init() {
             document.querySelector("audio").volume = getVolume();
             clearInterval(initTimer);
             isNewVersion = typeof document.getElementsByClassName("icon--2q1XXw icon-bbb-hand")[0] === 'undefined';
-            let index = isNewVersion ? 1 : 0;
-            document.getElementsByClassName("icon-bbb-user")[index].addEventListener("click", function () {
+            document.getElementsByClassName("icon-bbb-user")[0].addEventListener("click", function () {
                 if (document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0) setTimeout(function () {
                     addVolumeControl();
                 }, 100);
             });
             addVolumeControl();
+            register();
             username = document.querySelector('[data-test="userListItemCurrent"]').firstChild.children[1].firstChild.firstChild.innerText.trim();
 
             mutationObserver.observe(document.querySelector('[data-test="talkingIndicator"]'), {
@@ -47,6 +48,39 @@ function init() {
 
 init();
 
+function register() {
+    const userlist = document.querySelector('[data-test="userList"]');
+    userlist.addEventListener("click", function (event) {
+        const userItem = event.target.closest('[data-test^="userListItem"]');
+        if (userItem) {
+            remove();
+            const usernameElement = userItem.querySelector('span[position="bottom"]');
+            const name = usernameElement.textContent.trim();
+            if (name !== username) {
+                let slider = document.createElement("input");
+                slider.style = "margin-left: 6px; width:95%";
+                slider.type = "range";
+                slider.min = 0;
+                slider.max = 1
+                slider.step = 0.1;
+                slider.className = "bbb_plus_slider";
+                slider.value = getUserVolume(name);
+                slider.addEventListener('input', function (e) {
+                    changeUserVolume(name, slider.value);
+                });
+                lastSlider = slider;
+                usernameElement.parentNode.parentNode.append(slider);
+            }
+        }//clicked somewhere with no user
+    });
+
+    function remove() {
+        if (lastSlider !== null) {
+            lastSlider.remove();
+        }
+    }
+}
+
 function addVolumeControl() {
     //Global Volume Slider
     let outerdiv = document.createElement("div");
@@ -74,74 +108,6 @@ function addVolumeControl() {
     outerdiv.append(slider);
     let element = document.querySelector('[data-test="userListContent"]');
     element.insertBefore(outerdiv, element.firstChild);
-
-    const userMutationObserver = new MutationObserver(function (mutations) {
-        mutations.forEach(function (mutation) {
-            if (mutation.type === "childList" && mutation.target.className === "ReactVirtualized__Grid__innerScrollContainer" && mutation.addedNodes.length > 0 && mutation.removedNodes.length === 0) {
-                addPerUserVolume();
-            }
-        });
-    });
-
-    userMutationObserver.observe(document.querySelector('[data-test="userList"]'), {
-        childList: true,
-        subtree: true
-    });
-    addPerUserVolume();
-}
-
-function addPerUserVolume() {
-    //Per User Slider
-    let users = document.getElementsByClassName("tether-element tether-abutted tether-abutted-top tether-out-of-bounds tether-out-of-bounds-right tether-element-attached-bottom tether-element-attached-left tether-target-attached-top tether-target-attached-right tether-enabled");
-    if (users.length === 0) {
-        users = document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children;
-        isOldVersion = !isNewVersion;
-    }
-    for (let i = 1; i < users.length; i++) {
-        //from https://dzone.com/articles/why-does-javascript-loop-only-use-last-value
-        try {
-            throw i
-        } catch (ii) {
-            let tC = getTcIncrement() + ii;
-            if (!hasSlider()) {
-                let slider = document.createElement("input");
-                slider.style = "margin-left: 6px; width:95%";
-                slider.type = "range";
-                slider.min = 0;
-                slider.max = 1
-                slider.step = 0.1;
-                slider.className = "bbb_plus_slider";
-                slider.addEventListener('input', function () {
-                    let name = document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children[ii].children[0].children[0].children[0].children[0].children[1].children[0].children[0].innerText;
-                    changeUserVolume(name, slider.value);
-                });
-                slider.value = getUserVolume(document.getElementsByClassName("ReactVirtualized__Grid__innerScrollContainer")[0].children[ii].children[0].children[0].children[0].children[0].children[1].children[0].children[0].innerText);
-
-                if (isOldVersion) {
-                    document.getElementsByClassName("MuiPopover-root menu--Z1jX85y")[tC].children[1].children[0].append(slider)
-                } else {
-                    document.querySelectorAll('[role="menu"]')[5 + ii].append(slider)
-                }
-            }
-
-            function hasSlider() {
-                let arr = [...users[ii].children[0].children[0].children[0].children[0].children];//very old
-                if (isOldVersion) {
-                    let tC = getTcIncrement() + ii;
-                    arr = [...document.getElementsByClassName("MuiPopover-root menu--Z1jX85y")[tC].children[1].children[0].children];
-                } else if (isNewVersion) {
-                    arr = document.querySelectorAll('[role="menu"]')[5 + ii].children;
-                }
-                for (let j = 0; j < arr.length; j++) {
-                    if (arr[j].className === "bbb_plus_slider") {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        }
-    }
-
 }
 
 function changeVolume() {
@@ -200,25 +166,6 @@ function changeUserVolume(user, value) {
     }
     user = user.replaceAll(" ", "-").trim();
     localStorage.setItem("bbb_plus_volume_" + user, value);
-}
-
-function getTcIncrement() {
-    if (isMod()) {
-        return 4;
-    } else if (isPresenter()) {
-        return 3;
-    } else {
-        return 2;
-    }
-}
-
-function isMod() {
-    let userElm = document.querySelector('[data-test="userListItemCurrent"]').firstChild.firstChild.firstChild;
-    return userElm.className.includes("moderator") || userElm.dataset.test === "moderatorAvatar";
-}
-
-function isPresenter() {
-    return document.querySelector('[data-test="userListItemCurrent"]').firstChild.firstChild.firstChild.dataset.testPresenter === "";
 }
 
 function getVolumeLabelText() {
