@@ -4,6 +4,7 @@ let isNewVersion = false; //new means ~2827+
 let initialLoad = true;
 let username;
 let lastSlider = null;
+let isOpen = true;
 
 function init() {
     let counter = 0;
@@ -13,11 +14,7 @@ function init() {
             document.querySelector("audio").volume = getVolume();
             clearInterval(initTimer);
             isNewVersion = typeof document.getElementsByClassName("icon--2q1XXw icon-bbb-hand")[0] === 'undefined';
-            document.getElementsByClassName("icon-bbb-user")[0].addEventListener("click", function () {
-                if (document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0) setTimeout(function () {
-                    addVolumeControl();
-                }, 100);
-            });
+            reapply();
             addVolumeControl();
             register();
             username = document.querySelector('[data-test="userListItemCurrent"]').firstChild.children[1].firstChild.firstChild.innerText.trim();
@@ -47,6 +44,49 @@ function init() {
 }
 
 init();
+
+function reapply() {
+    document.getElementsByClassName("icon-bbb-user")[0].addEventListener("click", function () {
+        console.log("listener clicked")
+        setTimeout(function () {
+            let headstyle = document.getElementsByTagName("header")[0].style.left;
+            if (headstyle.split("px")[0] > 0) {
+                console.warn(headstyle)
+                setTimeout(function () {
+                    addVolumeControl();
+                    register();
+                    console.warn("reapplying")
+
+                }, 10);
+            } else {
+//todo readd old code for older versions!!!
+
+                if (document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0) setTimeout(function () {
+                    addVolumeControl();
+                    register();
+                }, 100);
+                /*
+                console.log("current state:" + isOpen)
+
+                isOpen = !isOpen;
+                if (isOpen) {
+                    setTimeout(function () {
+                        addVolumeControl();
+                        register();
+                        console.debug("reapplying")
+
+                    }, 100);
+                }
+                console.log("new state:" + isOpen)
+                console.log()
+                */
+
+            }
+        }, 500)
+
+    });
+}
+
 
 function register() {
     const userlist = document.querySelector('[data-test="userList"]');
