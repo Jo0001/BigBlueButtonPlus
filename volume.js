@@ -4,7 +4,6 @@ let isNewVersion = false; //new means ~2827+
 let initialLoad = true;
 let username;
 let lastSlider = null;
-let isOpen = true;
 
 function init() {
     let counter = 0;
@@ -47,43 +46,22 @@ init();
 
 function reapply() {
     document.getElementsByClassName("icon-bbb-user")[0].addEventListener("click", function () {
-        console.log("listener clicked")
-        setTimeout(function () {
-            let headstyle = document.getElementsByTagName("header")[0].style.left;
-            if (headstyle.split("px")[0] > 0) {
-                console.warn(headstyle)
-                setTimeout(function () {
-                    addVolumeControl();
-                    register();
-                    console.warn("reapplying")
-
-                }, 10);
-            } else {
-//todo readd old code for older versions!!!
-
-                if (document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0) setTimeout(function () {
-                    addVolumeControl();
-                    register();
-                }, 100);
-                /*
-                console.log("current state:" + isOpen)
-
-                isOpen = !isOpen;
-                if (isOpen) {
+        if (isNewVersion) {
+            setTimeout(function () {
+                let headstyle = document.getElementsByTagName("header")[0].style.left;
+                if (headstyle.split("px")[0] > 0) {
                     setTimeout(function () {
                         addVolumeControl();
                         register();
-                        console.debug("reapplying")
-
-                    }, 100);
+                    }, 10);
                 }
-                console.log("new state:" + isOpen)
-                console.log()
-                */
-
-            }
-        }, 500)
-
+            }, 500)
+        } else {
+            if (document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0) setTimeout(function () {
+                addVolumeControl();
+                register();
+            }, 100);
+        }
     });
 }
 
