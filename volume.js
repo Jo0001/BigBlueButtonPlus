@@ -4,6 +4,7 @@ let isNewVersion = false; //new means ~2827+
 let initialLoad = true;
 let username;
 let lastSlider = null;
+let working = false;
 
 function init() {
     let counter = 0;
@@ -32,6 +33,14 @@ function init() {
                     window.location.reload();//reload the page to reinitialize BBB+
                 }
             }
+            setInterval(function () {
+                if (isMissingAndNeeded() && !working) {
+                    working = true;
+                    addVolumeControl();
+                    register();
+                    working = false;
+                }
+            }, 60000);//every minute
         } else if (counter === 45) {
             clearInterval(initTimer);
             console.error("[BBB+] Couldn't load BigBlueButtonPlus");
@@ -51,18 +60,27 @@ function reapply() {
                 let headstyle = document.getElementsByTagName("header")[0].style.left;
                 if (headstyle.split("px")[0] > 0) {
                     setTimeout(function () {
+                        working = true;
                         addVolumeControl();
                         register();
+                        working = false;
                     }, 10);
                 }
             }, 500)
         } else {
             if (document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0) setTimeout(function () {
+                working = true;
                 addVolumeControl();
                 register();
+                working = false;
             }, 100);
         }
     });
+}
+
+function isMissingAndNeeded() {
+    return document.getElementById("volumeslider") === null && (document.getElementsByTagName("header")[0].style.left.split("px")[0] !== "0"
+        || (!isNewVersion && document.getElementsByClassName("arrowLeft--1CFBz1 icon-bbb-left_arrow").length === 0));
 }
 
 
@@ -83,7 +101,7 @@ function register() {
                 slider.step = 0.1;
                 slider.className = "bbb_plus_slider";
                 slider.value = getUserVolume(name);
-                slider.addEventListener('input', function (e) {
+                slider.addEventListener('input', function () {
                     changeUserVolume(name, slider.value);
                 });
                 lastSlider = slider;
