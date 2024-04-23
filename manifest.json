@@ -1,7 +1,7 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "BigBlueButton Plus",
-  "version": "2.1.0",
+  "version": "2.0.3",
   "description": "Individuelle Lautstärke für einzelne Teilnehmer & mehr - die perfekte Ergänzung für BBB Meetings",
   "icons": {
     "128": "128.png"
